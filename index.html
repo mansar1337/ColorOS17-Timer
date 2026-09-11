@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ColorOS 17 — Countdown</title>
+<meta name="description" content="Countdown to the ColorOS 17 release on September 17, 10:00 PM (UTC+8).">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink: #f2f1f6;
+    --ink-dim: #a5a3b0;
+    --canvas: #0b0b10;
+    --canvas-raised: #131319;
+    --line: rgba(242,241,246,0.10);
+    --hue-a: #6b8cff;
+    --hue-b: #b16bff;
+    --hue-c: #ff6bb0;
+    --hue-d: #ffb35c;
+    --hue-e: #55d6b0;
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin: 0;
+    padding: 0;
+    background: var(--canvas);
+    color: var(--ink);
+    font-family: 'Inter', system-ui, sans-serif;
+    min-height: 100%;
+    overflow-x: hidden;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.001ms !important; animation-iteration-count: 1 !important; transition-duration: 0.001ms !important; }
+  }
+
+  a{ color: inherit; }
+
+  .field{
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+  }
+
+  .bloom{
+    position: absolute;
+    width: 140vmax;
+    height: 140vmax;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: conic-gradient(from 0deg,
+      var(--hue-a), var(--hue-b), var(--hue-c), var(--hue-d), var(--hue-e), var(--hue-a));
+    filter: blur(min(18vw, 220px));
+    opacity: 0.28;
+    animation: spin 46s linear infinite;
+  }
+
+  @keyframes spin{
+    to{ transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  .veil{
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 38%, rgba(11,11,16,0.15) 0%, rgba(11,11,16,0.86) 58%, var(--canvas) 82%);
+  }
+
+  .grain{
+    position: absolute;
+    inset: 0;
+    opacity: 0.045;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: overlay;
+  }
+
+  main{
+    position: relative;
+    z-index: 1;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8vh 24px 10vh;
+    text-align: center;
+  }
+
+  .mark{
+    display: inline-flex;
+    align-items: baseline;
+    gap: 0.5em;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 500;
+    font-size: clamp(0.85rem, 1.4vw, 1rem);
+    letter-spacing: 0.02em;
+    color: var(--ink-dim);
+    margin-bottom: 2.4rem;
+  }
+
+  .mark .dot{
+    width: 0.5em;
+    height: 0.5em;
+    border-radius: 50%;
+    background: conic-gradient(from 90deg, var(--hue-a), var(--hue-c), var(--hue-d), var(--hue-a));
+  }
+
+  h1{
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: clamp(2.4rem, 7vw, 5rem);
+    line-height: 1.02;
+    letter-spacing: -0.01em;
+    margin: 0 0 0.9rem;
+  }
+
+  h1 .accent{
+    background: linear-gradient(100deg, var(--hue-a), var(--hue-b) 35%, var(--hue-c) 65%, var(--hue-d));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .sub{
+    max-width: 34ch;
+    font-size: clamp(1rem, 1.6vw, 1.15rem);
+    line-height: 1.6;
+    color: var(--ink-dim);
+    margin: 0 0 3.6rem;
+  }
+
+  .clock{
+    display: flex;
+    gap: clamp(10px, 2.4vw, 22px);
+    flex-wrap: nowrap;
+  }
+
+  .unit{
+    position: relative;
+    width: clamp(64px, 15vw, 118px);
+    padding: clamp(14px, 2.4vw, 22px) 0 clamp(10px, 1.6vw, 16px);
+    background: linear-gradient(180deg, rgba(242,241,246,0.05), rgba(242,241,246,0.015));
+    border: 1px solid var(--line);
+    border-radius: 20px;
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+
+  .unit::before{
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 20px;
+    padding: 1px;
+    background: linear-gradient(160deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 40%);
+    -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  .num{
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 700;
+    font-size: clamp(1.9rem, 6vw, 3.4rem);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    letter-spacing: -0.02em;
+  }
+
+  .label{
+    display: block;
+    margin-top: 0.6rem;
+    font-size: clamp(0.62rem, 1.1vw, 0.74rem);
+    letter-spacing: 0.06em;
+    color: var(--ink-dim);
+  }
+
+  .sep{
+    align-self: center;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    color: var(--ink-dim);
+    opacity: 0.5;
+    transform: translateY(-2px);
+  }
+
+  .status{
+    margin-top: 3.2rem;
+    font-size: 0.95rem;
+    color: var(--ink-dim);
+  }
+
+  .status strong{
+    color: var(--ink);
+    font-weight: 600;
+  }
+
+  footer{
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 0 24px 4vh;
+    font-size: 0.8rem;
+    color: var(--ink-dim);
+  }
+
+  footer .row{
+    display: flex;
+    justify-content: center;
+    gap: 0.6em;
+    flex-wrap: wrap;
+  }
+
+  .released{
+    display: none;
+  }
+
+  @media (max-width: 420px){
+    .clock{ gap: 8px; }
+    .unit{ width: 22vw; padding: 12px 0 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="field" aria-hidden="true">
+  <div class="bloom"></div>
+  <div class="veil"></div>
+  <div class="grain"></div>
+</div>
+
+<main>
+  <p class="mark"><span class="dot"></span>ColorOS 17</p>
+
+  <h1>Every color has<br><span class="accent">its moment.</span></h1>
+
+  <p class="sub">ColorOS 17 arrives September 17 at 10:00 PM in Beijing / Singapore / Manila time (UTC+8).</p>
+
+  <div class="clock" role="timer" aria-live="off">
+    <div class="unit">
+      <span class="num" id="d">00</span>
+      <span class="label">days</span>
+    </div>
+    <span class="sep">:</span>
+    <div class="unit">
+      <span class="num" id="h">00</span>
+      <span class="label">hours</span>
+    </div>
+    <span class="sep">:</span>
+    <div class="unit">
+      <span class="num" id="m">00</span>
+      <span class="label">minutes</span>
+    </div>
+    <span class="sep">:</span>
+    <div class="unit">
+      <span class="num" id="s">00</span>
+      <span class="label">seconds</span>
+    </div>
+  </div>
+
+  <p class="status" id="status">Counting down to launch.</p>
+  <p class="status released">ColorOS 17 is here.</p>
+</main>
+
+<footer>
+  <div class="row">
+    <span>September 17 · 10:00 PM UTC+8</span>
+    <span id="local-time"></span>
+  </div>
+</footer>
+
+<script>
+  // Target: September 17, 2026, 22:00:00 UTC+8
+  var target = new Date("2026-09-17T22:00:00+08:00").getTime();
+
+  var elD = document.getElementById('d');
+  var elH = document.getElementById('h');
+  var elM = document.getElementById('m');
+  var elS = document.getElementById('s');
+  var elStatus = document.getElementById('status');
+  var elReleased = document.querySelector('.released');
+
+  function pad(n){ return String(n).padStart(2, '0'); }
+
+  function tick(){
+    var now = Date.now();
+    var diff = target - now;
+
+    if (diff <= 0){
+      elD.textContent = '00';
+      elH.textContent = '00';
+      elM.textContent = '00';
+      elS.textContent = '00';
+      elStatus.style.display = 'none';
+      elReleased.style.display = 'block';
+      clearInterval(timer);
+      return;
+    }
+
+    var days = Math.floor(diff / 86400000);
+    var hours = Math.floor((diff % 86400000) / 3600000);
+    var mins = Math.floor((diff % 3600000) / 60000);
+    var secs = Math.floor((diff % 60000) / 1000);
+
+    elD.textContent = pad(days);
+    elH.textContent = pad(hours);
+    elM.textContent = pad(mins);
+    elS.textContent = pad(secs);
+  }
+
+  tick();
+  var timer = setInterval(tick, 1000);
+
+  try{
+    var localStr = new Intl.DateTimeFormat(undefined, {
+      dateStyle: 'medium',
+      timeStyle: 'short'
+    }).format(new Date(target));
+    document.getElementById('local-time').textContent = '· ' + localStr + ' your local time';
+  }catch(e){}
+</script>
+
+</body>
+</html>
